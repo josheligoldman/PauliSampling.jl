@@ -6,6 +6,7 @@ using Hadamard
 using Combinatorics
 using BenchmarkTools
 using Random
+using LinearAlgebra
 
 include("utils.jl")
 include("probs.jl")
