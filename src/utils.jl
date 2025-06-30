@@ -84,3 +84,16 @@ function random_psum(nq::Integer)
 
     return PauliSum(pstrs)
 end
+
+function get_dist(psum, prob_fn)
+    nq = psum.nqubits
+    dist = Vector{Float64}(undef, 2^nq)
+    for i in 0:(2^nq - 1)
+        dist[i+1] = prob_fn(psum, i)
+    end
+    return dist
+end
+
+function tvd(p, q)
+    0.5 * sum(abs.(p .- q))
+end
