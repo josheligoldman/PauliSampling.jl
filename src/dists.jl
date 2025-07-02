@@ -51,30 +51,36 @@ function (H::PauliSum{S, C})(y::AbstractVector, x::AbstractVector) where {S, C}
     return y
 end
 
-function build_Hmap(psum)
+function build_lin_map(psum)
     nq = psum.nqubits
     dim = 1<<nq
     return LinearMap{ComplexF64}(psum, dim, dim; issymmetric=true)
 end
 
-function compute_most_negative_eigenvalue(Hmap)
-    λ, = eigs(Hmap; nev=1, which=:SR, ritzvec=false)
+function compute_most_negative_eigenvalue(lin_map)
+    λ, = eigs(lin_map; nev=1, which=:SR, ritzvec=false)
     @assert sum(abs, imag.(λ)) < 1e-9
     return real(λ[1])
 end
 
-function compute_neg_eigs(Hmap)
-    nev = size(Hmap, 1)
-    λ, = eigs(Hmap; nev=nev, which=:SR, ritzvec=false)
+function compute_neg_eigs(lin_map)
+    dim = size(lin_map, 1)
+    if dim == 2
+        λ = eigen(Hermitian(Matrix(lin_map))).values
+    else
+        nev = dim - 2 # I still don't get why I have to do - 2.
+        λ, = eigs(lin_map; nev=nev, which=:SR, ritzvec=false)
+    end
     @assert sum(abs, imag.(λ)) < 1e-9
     λ = real(λ)
     neg = λ[λ .< 0]
     return neg
 end
 
-function compute_negativity(Hmap; maxnev=256)
-    neg_vals = compute_neg_eigs(Hmap)
+function compute_negativity(lin_map; maxnev=256)
+    neg_vals = compute_neg_eigs(lin_map)
     neg_sum = sum(abs, neg_vals)
+    return neg_sum
 end
 
 """

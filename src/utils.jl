@@ -81,7 +81,6 @@ function random_psum(nq::Integer)
         coeff = randn() + randn()*im
         pstrs[idx + 1] = PauliString(nq, paulis, 1:nq, coeff)
     end
-
     return PauliSum(pstrs)
 end
 
@@ -95,5 +94,14 @@ function get_dist(psum, prob_fn)
 end
 
 function tvd(p, q)
-    0.5 * sum(abs.(p .- q))
+    return 0.5 * sum(abs.(p .- q))
+end
+
+function kl_div(p, q)
+    res = 0.0
+    for (i, pi) in enumerate(p)
+        qi = q[i]
+        res += pi * log(pi/qi)
+    end
+    return res
 end

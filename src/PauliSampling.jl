@@ -7,12 +7,14 @@ using Combinatorics
 using BenchmarkTools
 using Random
 using LinearAlgebra
+using LinearMaps
+using Arpack
 
 include("utils.jl")
 include("probs.jl")
 include("dists.jl")
 
-export coset_normalizing_factor
+# export coset_normalizing_factor
 
 
 end # module PauliSampling
