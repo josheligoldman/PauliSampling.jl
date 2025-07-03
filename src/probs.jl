@@ -140,11 +140,11 @@ function sample_bitstring(nq, psum)
     # TODO: Reduce memory. Try making more stuff with psum/running_psum in place. 
     running_psum = psum
     bitstring = BitVector(undef, nq)
-    f = coset_normalizing_factor(nq, running_psum)
+    f = coset_normalizing_factor(running_psum)
     for qind in 1:nq
         proj0 = apply_projector(running_psum, qind, false)
         bitstring[qind] = false
-        f0 = coset_normalizing_factor(nq, proj0; num_set_bits=qind, set_bits=@view bitstring[1:qind])
+        f0 = coset_normalizing_factor(proj0; num_set_bits=qind, set_bits=@view bitstring[1:qind])
         p0 = f0 / f
         # Clean this up. Don't use if and else.
         if rand() <= p0
