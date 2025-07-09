@@ -31,7 +31,12 @@ export
     zero_state,
     build_circuit
 
-# export coset_normalizing_factor
-
+include("analysis.jl")
+export
+    tvd,
+    kl_div,
+    avg_metrics_for_weight,
+    bit_marginals,
+    shannon_entropy
 
 end # module PauliSampling
