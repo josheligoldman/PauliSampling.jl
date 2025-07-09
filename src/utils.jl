@@ -66,24 +66,6 @@ end
 
 qinds_base_func = (i, nq) -> qinds_in_order(i, 1, nq)
 
-function random_psum(nq::Integer)
-    labels = [:I, :X, :Y, :Z]
-    total = 4^nq
-    pstrs = Vector{PauliString}(undef, total)
-
-    for idx in 0:total-1
-        paulis = Vector{Symbol}(undef, nq)
-        tmp = idx
-        for i in 1:nq
-            paulis[i] = labels[mod1(tmp, 4)]
-            tmp ÷= 4
-        end
-        coeff = randn() + randn()*im
-        pstrs[idx + 1] = PauliString(nq, paulis, 1:nq, coeff)
-    end
-    return PauliSum(pstrs)
-end
-
 function get_dist(psum, prob_fn)
     nq = psum.nqubits
     dist = Vector{Float64}(undef, 2^nq)

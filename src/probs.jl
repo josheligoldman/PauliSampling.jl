@@ -74,7 +74,29 @@ function compute_grouped_traces(psum, qinds)
         @views qinds_view = qinds[one_inds]
         coeffs[i + 1] = getcoeff(psum, Z_view, qinds_view)
     end
-    return ifwht(coeffs)
+    # eturn ifwht(coeffs)
+    return naive_ifwht!(coeffs)    
+end
+
+function naive_ifwht!(x::Vector{ComplexF64})
+    n = length(x)
+    logn = trailing_zeros(n)
+    @assert 2^logn == n "length must be a power of 2"
+    
+    for i in 0:logn-1
+        step = 1 << (i + 1)
+        half = 1 << i
+        for j in 1:step:n
+            for k in 0:half-1
+                a = x[j + k]
+                b = x[j + k + half]
+                x[j + k] = a + b
+                x[j + k + half] = a - b
+            end
+        end
+    end
+    x ./= n
+    return x
 end
 
 function approximate_normalizing_factor(psum, qinds)
@@ -133,29 +155,4 @@ end
 function approximate_prob(psum, x::Integer)
     nq = psum.nqubits
     return approximate_prob(psum, BitVector(digits(x, base=2, pad=nq)))
-end
-
-function sample_bitstring(nq, psum)
-    # TODO: Truncate running_psum. It grows quite large and makes things slow. 
-    # TODO: Reduce memory. Try making more stuff with psum/running_psum in place. 
-    running_psum = psum
-    bitstring = BitVector(undef, nq)
-    f = coset_normalizing_factor(running_psum)
-    for qind in 1:nq
-        proj0 = apply_projector(running_psum, qind, false)
-        bitstring[qind] = false
-        f0 = coset_normalizing_factor(proj0; num_set_bits=qind, set_bits=@view bitstring[1:qind])
-        p0 = f0 / f
-        # Clean this up. Don't use if and else.
-        if rand() <= p0
-            bitstring[qind] = false
-            f = f0
-            running_psum = proj0
-        else
-            bitstring[qind] = true
-            f = f - f0
-            running_psum = psum - proj0
-        end
-    end
-    return bitstring
 end

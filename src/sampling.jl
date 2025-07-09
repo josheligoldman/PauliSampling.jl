@@ -42,3 +42,15 @@ function sample_bitstring(psum; prob_method::Symbol = :approx)
 
     return bitstring
 end
+
+function unnormalized_prob(psum, qind, x_i)
+    return abs(getcoeff(psum, :I, qind) + (-1.0)^(x_i) * getcoeff(psum, :Z, qind))
+end
+
+function normalized_prob(psum, qind, x_i)
+    # Calculates the probability of observing a 0 for qubit qind under the distribution paramaterized by psum. 
+    p0 = unnormalized_prob(psum, qind, 0)
+    p1 = unnormalized_prob(psum, qind, 1)
+
+    return (x_i == 0 ? p0 : p1) / (p0 + p1)
+end
