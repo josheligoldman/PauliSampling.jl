@@ -11,6 +11,16 @@ using LinearMaps
 using Arpack
 using Plots
 
+# Extend Base methods for PauliFreqTracker
+import Base: real, imag, abs, complex, convert, float
+
+real(p::PauliFreqTracker) = real(p.coeff)
+imag(p::PauliFreqTracker) = imag(p.coeff)
+abs(p::PauliFreqTracker) = abs(p.coeff)
+float(p::PauliFreqTracker) = float(p.coeff)
+complex(p::PauliFreqTracker) = complex(p.coeff)
+convert(::Type{ComplexF64}, p::PauliFreqTracker) = convert(ComplexF64, p.coeff)
+
 include("utils.jl")
 export 
     get_dist

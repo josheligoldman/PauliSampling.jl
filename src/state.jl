@@ -1,8 +1,15 @@
-function zero_state(nq)
-    # |0><0|
+function zero_state(nq, ::Type{T}) where T
     return prod(
-        PauliSum([PauliString(nq, :I, qind, 1/2), PauliString(nq, :Z, qind, 1/2)]) for qind in 1:nq
+        qind -> PauliSum(nq, Dict(
+            PauliString(nq, :I, qind).term => Complex{T}(1//2),
+            PauliString(nq, :Z, qind).term => Complex{T}(1//2)
+        )),
+        1:nq
     )
+end
+
+function zero_state(nq::Int)
+    return zero_state(nq, Float64)
 end
 
 function random_psum(nq::Integer)

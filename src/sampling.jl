@@ -44,7 +44,14 @@ function sample_bitstring(psum; prob_method::Symbol = :approx)
 end
 
 function unnormalized_prob(psum, qind, x_i)
-    return abs(getcoeff(psum, :I, qind) + (-1.0)^(x_i) * getcoeff(psum, :Z, qind))
+    a = getcoeff(psum, :I, qind)
+    b = getcoeff(psum, :Z, qind)
+
+    # Unwrap coefficients if they are PauliFreqTracker
+    a_val = a isa PauliFreqTracker ? a.coeff : a
+    b_val = b isa PauliFreqTracker ? b.coeff : b
+
+    return abs(a_val + (-1.0)^x_i * b_val)
 end
 
 function normalized_prob(psum, qind, x_i)
