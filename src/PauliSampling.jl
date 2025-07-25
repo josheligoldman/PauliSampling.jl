@@ -11,7 +11,9 @@ using LinearMaps
 using Arpack
 
 include("utils.jl")
+include("proj.jl")
 include("probs.jl")
+include("samp.jl")
 include("dists.jl")
 
 # export coset_normalizing_factor
