@@ -139,7 +139,7 @@ function bayes_unnormalized_marginal(psum::PauliSum{TT, CT}, qind::Integer, bit:
     return abs(a + (1 - 2 * bit) * b)
 end
 
-function bayes_marginal(psum::PauliSum{TT, CT}, qind::Integer, bit::Bool)
+function bayes_marginal(psum::PauliSum{TT, CT}, qind::Integer, bit::Bool) where {TT, CT}
     p0 = bayes_unnormalized_marginal(psum, qind, false)
     p1 = bayes_unnormalized_marginal(psum, qind, true)
 
@@ -158,5 +158,6 @@ function bayes_prob(psum::PauliSum{TT, CT}, x::BitVector) where {TT, CT}
 end
 
 function bayes_prob(psum, x::Integer)
-    return prob(psum, BitVector(digits(x, base=2, pad=nq)))
+    nq = psum.nqubits
+    return bayes_prob(psum, BitVector(digits(x, base=2, pad=nq)))
 end
