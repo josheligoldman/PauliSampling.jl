@@ -8,7 +8,6 @@ function normalizing_factor(psum::PauliSum{TT, CT}) where {TT, CT}
 end
 
 function faster_normalizing_factor(psum::PauliSum{TT, CT}) where {TT, CT}
-    nq = psum.nqubits
     f_psum = filter_no_XY(psum)
     return normalizing_factor(f_psum)
 end
@@ -146,18 +145,32 @@ function bayes_marginal(psum::PauliSum{TT, CT}, qind::Integer, bit::Bool) where 
     return (bit == 0 ? p0 : p1) / (p0 + p1)
 end
 
+function bayes_prob(psum::PauliSum{TT, CT}, x::Unsigned) where {TT, CT}
+    nq = psum.nqubits
+    running_psum = psum
+    p = 1.0
+    for i in 1:nq
+        x_i = get_bit(x, i)
+        p *= bayes_marginal(running_psum, i, x_i)
+        running_psum = trace_project(running_psum, i, x_i)
+    end
+    return p
+end
+
 function bayes_prob(psum::PauliSum{TT, CT}, x::BitVector) where {TT, CT}
     nq = psum.nqubits
     running_psum = psum
     p = 1.0
     for i in 1:nq
-        p *= bayes_marginal(running_psum, i, x[i])
-        running_psum = trace_project(running_psum, i, x[i])
+        x_i = x[i]
+        p *= bayes_marginal(running_psum, i, x_i)
+        running_psum = trace_project(running_psum, i, x_i)
     end
     return p
 end
 
-function bayes_prob(psum, x::Integer)
+function bayes_prob(psum::PauliSum{TT, CT}, x::Integer) where {TT, CT}
     nq = psum.nqubits
-    return bayes_prob(psum, BitVector(digits(x, base=2, pad=nq)))
+    x_bv = BitVector(digits(x, base=2, pad=nq))
+    return bayes_prob(psum, x_bv)
 end
