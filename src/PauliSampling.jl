@@ -24,6 +24,7 @@ convert(::Type{ComplexF64}, p::PauliFreqTracker) = convert(ComplexF64, p.coeff)
 include("utils.jl")
 export 
     get_dist
+    get_bit
 
 include("probs.jl")
 export 

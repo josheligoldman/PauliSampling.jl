@@ -74,3 +74,16 @@ function get_dist(psum, prob_fn)
     end
     return dist
 end
+
+@inline function get_bit(a::Unsigned, i::Integer)::Bool
+    return ((a >> (i - 1)) & 0x01) == 1
+end
+
+@inline function set_bit(a::T, i::Integer, b::Bool)::T where {T <: Unsigned}
+    mask = one(T) << (i-1)
+    if b
+        return a | mask
+    else
+        return a & ~mask
+    end
+end
